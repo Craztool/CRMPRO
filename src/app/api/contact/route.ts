@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
     const crmpUrl = process.env.CRMPRO_API_URL
     if (crmpUrl) {
       const sessionId = `web-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
+      // Compose text so LLM can extract name + need in one message
+      const composedText = `Меня зовут ${name.trim()}. Email: ${email.trim()}. ${message.trim()}`
       await fetch(`${crmpUrl}/webhooks/webchat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,7 +22,7 @@ export async function POST(req: NextRequest) {
           sessionId,
           name: name.trim(),
           email: email.trim(),
-          text: message.trim(),
+          text: composedText,
         }),
       }).catch(() => {
         // Don't fail the request if CRM is unreachable
